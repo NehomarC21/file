@@ -1,0 +1,37 @@
+sudo apt-get install git gnupg flex bison gperf build-essential zip curl libc6-dev libncurses5-dev:i386 x11proto-core-dev libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-glx:i386 libgl1-mesa-dev g++-multilib mingw32 tofrodos python-markdown libxml2-utils xsltproc zlib1g-dev:i386 git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev libc6-dev x11proto-core-dev libx11-dev lib32z-dev libgl1-mesa-dev g++-multilib mingw32 tofrodos python-markdown libxml2-utils xsltproc libx11-dev:i386 lib32z1 lib32ncurses5 lib32bz2-1.0 lib32readline-gplv2-dev
+
+sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so.1 /usr/lib/i386-linux-gnu/libGL.so
+
+
+
+mkdir ~/cm10.1
+cd ~/cm10.1
+mkdir ~/bin
+PATH=~/bin:$PATH
+curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+chmod a+x ~/bin/repo
+git config --global user.email "124577215@qq.com"
+git config --global user.name "hey"
+repo init -u git://github.com/CyanogenMod/android.git -b cm-10.1
+repo sync -j32
+
+mkdir ~/cm10.2
+cd ~/cm10.2
+mkdir ~/bin
+PATH=~/bin:$PATH
+curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+chmod a+x ~/bin/repo
+git config --global user.email "124577215@qq.com"
+git config --global user.name "hey"
+repo init -u git://github.com/CyanogenMod/android.git -b cm-10.2
+repo sync -j32
+
+mkdir -p ~/miui
+cd ~/miui
+mkdir ~/bin
+PATH=~/bin:$PATH
+curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+chmod a+x ~/bin/repo
+repo init -u git://github.com/scue/miui_recovery
+repo sync -j32
+

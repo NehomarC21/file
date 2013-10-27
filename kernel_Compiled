@@ -1,0 +1,28 @@
+变量
+export ARCH=arm
+export CROSS_COMPILE=/usr/local/arm-eabi-4.4.3/bin/arm-eabi-
+export PATH=$PATH:/usr/local/arm-linux-gcc-4.4.3/bin
+
+Makefile文件
+CROSS_COMPILE = arm-none-linux-gnueabi-
+KBUILD_CFLAGS += -Werror
+
+路径
+cd /root/kernel/ace-2.6.35-gb-MR
+cd /root/kernel/ace30-gb-mr-2.6.35-931a37e
+cd /root/kernel/kernel-tegra
+
+编译
+make
+
+EXT4
+CONFIG_EXT4_FS=y
+CONFIG_EXT4_DEFAULTS_TO_ORDERED=y
+CONFIG_EXT4_FS_XATTR=y
+CONFIG_EXT4_FS_POSIX_ACL=y
+CONFIG_EXT4_FS_SECURITY=y
+CONFIG_EXT4_DEBUG=y
+
+SWAP
+CONFIG_SWAP=Y
+

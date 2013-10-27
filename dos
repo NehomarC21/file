@@ -1,0 +1,98 @@
+
+1、解包img工具
+unyaffs:
+解压,将3个文件放入bin目录
+进入bin目录:cd /bin
+赋予权限:sudo chmod 777 unyaffs
+使用方法:unyaffs system.img
+
+2、打包img工具
+yaffs2:
+解压
+进入utils目录:cd ./yaffs2/utils
+运行:make
+拷贝./yaffs2/utils所有文件到bin
+进入bin目录:cd /bin
+赋予权限:sudo chmod 777 mkyaffs2image
+使用方法:mkyaffs2image system system.img
+
+zip解压缩
+zip -r system.zip system（把system文件夹打包成zip文件）
+unzip text.zip
+
+3、解包ext2
+解压genext2fs-1.4rc1
+安装
+cd genext2fs-1.4rc1
+./configure
+make
+make install
+拷贝genext2fs-1.4rc1下所有文件到bin
+进入bin目录:cd /bin
+赋予权限:sudo chmod 777 genext2fs
+使用方法：
+1、将你要修改的system.ext2拷贝到Linux下面，假设放在目录/home下面。
+2、在/home文件夹下建立一个system文件夹:system
+3、挂载system.ext2到文件夹system:
+   进入home目录：cd /home
+   mount -o loop system.ext2 ./system
+   这样system.ext2的内容就出现在system文件夹了,但并不实际存在。
+4、你可以修改system文件夹的内容，由于system文件夹是mount（挂载）出来的，
+   所以你修改system文件夹的内容时，其实system.ext2文件同时也被你修改了！
+5、最后要记得解除挂载，使用umount命令：
+   umount ./system，system.ext2的修改就完成了。
+6、你也可以将修改好的system文件夹压缩成一个新的system_new.ext2,
+   使用命令：150000=150000kb，结合实际文件设定ext2文件的大小，多少M自己计算
+   genext2fs --root ./system -U -b 150000 system_new.ext2
+
+有些ROM里面 没有 APP和framework 文件夹
+因为被 压缩到  squashed.sqsh里面去了
+以下是 squashed.sqsh  的分解 与合成命令
+分解
+unsquashfs squashed.sqsh
+合成
+mksquashfs squashed squashed.sqsh
+
+
+模拟器安装Linux或ubuntu，并取得root权限，我用的Linux。如何模拟器安装和root权限的取得就不说了，百度一大堆
+1楼教程
+2楼工具安装
+
+正题一，修改直刷包：
+1、到/home下新建立system文件夹，拷贝system.img到/home/system
+2、分解system.img，使用命令：
+cd /home/system
+unyaffs system.img[/code]
+完成后删除system.img
+
+3、分解完成后可以进行修改，apk的增减、替换，CM7系列rom的gprs配置在etc/apns-conf.xml、rom版本及初始语言在build.prop里，有的在etc/customer/apns.xml(没有可以增加)，其他不一一说了，大家讨论，我懂得也不多
+4、修改完成后的打包，使用命令：
+cd /home
+mkyaffs2image system system.img[/code]
+新的system.img将生成到/home下
+5、boot.img，分解打包方法同system.img，里面只有两个文件（initrd.gz、zImage）
+
+正题二，flash.cfg修改及解释：
+flash.cfg为刷机及分区脚本
+misc ya 1M
+recovery ya|ro 5M
+boot ya|boot|ro filesize+2M boot.img    ;boot分区，大小为：boot.img的文件大小+2M
+system ya filesize system.img      ;system分区，大小为：等于system.img的文件大小
+cache ya|hr 10M     ;1、2行及当前行是recovery必要的，不用recovery的可删除1、2行；缓存嘛，dft出来的第一个直刷包就有这行，但可有可无，也不知道有与无的差别
+userdata ya|asize|hr allsize      ;用户分区，大小为：剩余的所有空间。hr意思是执行硬启的时候会被格式化
+
+正题三，修改system.ext2，此方法修改的ext2没有测试：
+1、使用linux来挂载ext2文件，假如ext2文件置放于/home下，在/home下建立一个文件夹：system
+然后使用命令，此命令要在system文件夹的上级目录执行：
+cd /home
+mount-o loop system.ext2 ./system
+这样system.ext2的内容就出现在system文件夹了,但并不实际存在。
+2、由于system文件夹是mount（挂载）出来的，所以你修改system文件夹的内容时，其实system.ext2文件同时也被你修改了！
+3、但最后一定要记得解除挂载（大概是保存吧！），使用umount命令，此命令需要在system文件夹的上级目录执行：
+umount ./system
+system.ext2的修改就完成了。
+4、我还没明白如何生成新的ext2文件，所以得找一个system.ext2文件来修改，将system.ext2的内容挂载出来后，删除全部，再把直刷包里的全部放进去，然后解除挂载
+5、rootfs.img，不知是什么东西，看了下里面的文件，不明白随便找一个应该可以用，因为核心的东西只有三个文件（system.ext2、initrd.gz、zImage）
+6、替换initrd.gz、zImage，直接替换为直刷包boot.img里的两个文件
+我觉得这样的思路应该可以，但并没有实际测试，因为HD2已死，目前手上只有一部MOTO A1000电话
+
